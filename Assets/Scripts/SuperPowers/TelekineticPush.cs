@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TelekineticPush : MonoBehaviour
+[System.Serializable]
+public class TelekineticPush : SuperPower
 {
     [SerializeField] ParticleSystem fx;
     [SerializeField] float maximumPushForce = 500f;
@@ -12,35 +13,32 @@ public class TelekineticPush : MonoBehaviour
     [SerializeField] float pushRadius = 50f;
     [SerializeField] LayerMask mask;
     [SerializeField] SphereCastVisual visual;
-    bool canUse = true;
 
-    private void OnDrawGizmosSelected()
+    public override void Gizmos()
     {
-        visual.VisualizeCast(mask, new Ray(transform.position, Camera.main.transform.forward), pushRange, pushRadius);
+        base.Gizmos();
+        visual.VisualizeCast(mask, new Ray(SuperPowersContainer.Instance.transform.position, Camera.main.transform.forward), pushRange, pushRadius);
     }
 
-    public void Start()
+    public override void Initialize()
     {
         currentPushForce = maximumPushForce * 0.25f;
     }
 
-    IEnumerator Push()
+    public override void Effect()
     {
-        RaycastHit[] colliders = Physics.SphereCastAll(transform.position, pushRadius, Camera.main.transform.forward, pushRange, mask);
+        RaycastHit[] colliders = Physics.SphereCastAll(SuperPowersContainer.Instance.transform.position, pushRadius, Camera.main.transform.forward, pushRange, mask);
         foreach (var item in colliders)
         {
-            //Vector3 force = item.transform.position - transform.position;
-            //item.rigidbody.AddForceAtPosition(force * pushForce, transform.position);
             item.rigidbody.velocity = new Vector3();
-            item.rigidbody.AddExplosionForce(currentPushForce, transform.position, 80f, 3f);
+            item.rigidbody.AddExplosionForce(currentPushForce, SuperPowersContainer.Instance.transform.position, 80f, 3f);
         }
 
         currentPushForce = maximumPushForce * 0.25f;
-        yield return new WaitForSeconds(0.3f);
-        canUse = true;
+        SuperPowersContainer.Instance.StartCoroutine(Cooldown());
     }
 
-    private void Update()
+    public override void UpdatePower()
     {
         if (Input.GetMouseButton(0) && canUse && currentPushForce < maximumPushForce)
         {
@@ -53,7 +51,7 @@ public class TelekineticPush : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && canUse)
         {
             canUse = false;
-            StartCoroutine(Push());
+            Effect();
             fx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
