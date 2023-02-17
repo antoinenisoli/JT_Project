@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SuperPowersContainer : MonoBehaviour
 {
     public static SuperPowersContainer Instance;
-    [SerializeField] TelekineticPush tkPush;
-    [SerializeField] TelekineticPull tkPull;
+    [SerializeField] TextMeshProUGUI powerText;
+    [SerializeField] TKPush tkPush;
+    [SerializeField] TKPull tkPull;
+    [SerializeField] TKMove tkMove;
     List<SuperPower> superPowers = new List<SuperPower>();
     int powerListIndex;
 
@@ -28,11 +32,12 @@ public class SuperPowersContainer : MonoBehaviour
     {
         superPowers.Add(tkPush);
         superPowers.Add(tkPull);
-
+        superPowers.Add(tkMove);
         foreach (var item in superPowers)
-        {
             item.Initialize();
-        }
+
+        if (powerText)
+            powerText.text = currentPower.name;
     }
 
     private void Update()
@@ -41,6 +46,8 @@ public class SuperPowersContainer : MonoBehaviour
         {
             powerListIndex++;
             powerListIndex %= superPowers.Count;
+            if (powerText)
+                powerText.text = currentPower.name;
         }
 
         currentPower.UpdatePower();

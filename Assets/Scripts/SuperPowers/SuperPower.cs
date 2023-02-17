@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class SuperPower
 {
+    [Header(nameof(SuperPower))]
+    public string name;
     [SerializeField] public float powerCooldown = 0.3f;
     protected bool canUse = true;
 
