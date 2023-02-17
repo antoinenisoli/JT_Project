@@ -2597,10 +2597,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3268316506462591945, guid: a62abbb708e3f49489bde29e5cfc3ebd, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a62abbb708e3f49489bde29e5cfc3ebd, type: 3}
 --- !u!4 &590849479 stripped
@@ -6482,10 +6478,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 106215943}
     m_Modifications:
-    - target: {fileID: 1913279719, guid: 58d97d456aead63499ac7d5316541f78, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1913279723, guid: 58d97d456aead63499ac7d5316541f78, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -19657,10 +19649,13 @@ MonoBehaviour:
   tkMove:
     name: Telekinetic Move
     powerCooldown: 0
+    down: 0
     itemMask:
       serializedVersion: 2
       m_Bits: 64
-    distanceLimits: {x: 5, y: 25}
+    distanceLimits: {x: 5, y: 20}
+    massInfluence: 1
+    pushForce: 50
     scrollSpeed: 50
     itemMoveSpeed: 20
     interactionRange: 50

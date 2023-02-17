@@ -9,13 +9,16 @@ public class TKMove : SuperPower
     [SerializeField] LayerMask itemMask;
     [SerializeField] Vector2 distanceLimits;
     [SerializeField] [Range(0,1)] float massInfluence = 1f;
+    [SerializeField] float pushForce = 10f;
     [SerializeField] float scrollSpeed, itemMoveSpeed = 5f, interactionRange = 15f;
 
+    Vector3 storedForce;
     Rigidbody itemRigidbody;
     Transform currentItem;
     bool isMoving;
     Camera mainCam;
     float distance;
+    bool down;
 
     public override void Initialize()
     {
@@ -33,14 +36,21 @@ public class TKMove : SuperPower
         float min = 0.38f;
         float moveSpeed = itemMoveSpeed - ((massInfluence * min) * itemRigidbody.mass);
 
-        Vector3 difference = movePosition - currentItem.position;
-        itemRigidbody.velocity = difference * moveSpeed;
+        storedForce = movePosition - currentItem.position;
+        itemRigidbody.velocity = storedForce * moveSpeed;
         itemRigidbody.angularVelocity = new Vector3();
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            storedForce = new Vector3();
+            itemRigidbody.AddForce(mainCam.transform.forward * pushForce, ForceMode.Impulse);
+            EndMoving();
+        }
     }
 
     void StartMoving()
     {
-        itemRigidbody = currentItem.GetComponent<Rigidbody>();
+        itemRigidbody = currentItem.GetComponentInChildren<Rigidbody>();
         itemRigidbody.velocity = new Vector3();
         itemRigidbody.angularVelocity = new Vector3();
         itemRigidbody.useGravity = false;
@@ -53,6 +63,10 @@ public class TKMove : SuperPower
     void EndMoving()
     {
         itemRigidbody.useGravity = true;
+        itemRigidbody.AddForce(storedForce);
+        itemRigidbody = null;
+        down = false;
+
         isMoving = false;
         currentItem = null;
     }
@@ -60,8 +74,10 @@ public class TKMove : SuperPower
     public override void UpdatePower()
     {
         Physics.Raycast(mainCam.transform.position, mainCam.transform.forward, out RaycastHit hit, interactionRange, itemMask);
+        if (Input.GetMouseButtonDown(0))
+            down = true;
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && down)
         {
             if (!isMoving && hit.transform != null)
             {
@@ -73,7 +89,7 @@ public class TKMove : SuperPower
                 Effect();
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && currentItem)
             EndMoving();
     }
 }
