@@ -52,4 +52,9 @@ public class SuperPowersContainer : MonoBehaviour
 
         currentPower.UpdatePower();
     }
+
+    private void FixedUpdate()
+    {
+        currentPower.FixedUpdate();
+    }
 }

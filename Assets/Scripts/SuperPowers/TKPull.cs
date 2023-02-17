@@ -37,8 +37,6 @@ public class TKPull : SuperPower
     public override void UpdatePower()
     {
         bool detect = Physics.SphereCast(Camera.main.transform.position, interactionRadius, Camera.main.transform.forward, out RaycastHit hit, interactionRange, itemMask);
-        if (detect)
-            Debug.Log(hit.transform);
 
         if (Input.GetMouseButtonDown(0) && hit.transform != null)
         {

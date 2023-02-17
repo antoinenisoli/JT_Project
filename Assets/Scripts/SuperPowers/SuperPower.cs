@@ -9,15 +9,9 @@ public abstract class SuperPower
     [SerializeField] public float powerCooldown = 0.3f;
     protected bool canUse = true;
 
-    public virtual void Gizmos()
-    {
-
-    }
-
-    public virtual void Effect()
-    {
-        
-    }
+    public virtual void Gizmos() { }
+    public virtual void Effect() { }
+    public virtual void FixedUpdate() { }
 
     public IEnumerator Cooldown()
     {
