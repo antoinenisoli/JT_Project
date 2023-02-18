@@ -28,8 +28,7 @@ public class TKMove : SuperPower
     public override void Effect()
     {
         base.Effect();
-        Vector2 scroll = Input.mouseScrollDelta;
-        distance += scroll.y * scrollSpeed * Time.deltaTime;
+        distance += Input.GetAxisRaw("Mouse ScrollWheel") * scrollSpeed * Time.deltaTime;
         distance = Mathf.Clamp(distance, distanceLimits.x, distanceLimits.y);
 
         Vector3 movePosition = mainCam.transform.position + mainCam.transform.forward * distance;
