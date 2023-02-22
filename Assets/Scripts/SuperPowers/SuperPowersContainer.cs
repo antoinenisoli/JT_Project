@@ -11,6 +11,7 @@ public class SuperPowersContainer : MonoBehaviour
     [SerializeField] TKPush tkPush;
     [SerializeField] TKPull tkPull;
     [SerializeField] TKMove tkMove;
+
     List<SuperPower> superPowers = new List<SuperPower>();
     int powerListIndex;
 
@@ -42,10 +43,16 @@ public class SuperPowersContainer : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        if (scroll != 0)
         {
-            powerListIndex++;
+            if (scroll > 0)
+                powerListIndex++;
+            else
+                powerListIndex--;
+
             powerListIndex %= superPowers.Count;
+            powerListIndex = Mathf.Abs(powerListIndex);
             if (powerText)
                 powerText.text = currentPower.name;
         }

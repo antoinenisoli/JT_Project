@@ -13,8 +13,7 @@ public class TKMove : SuperPower
     [SerializeField] float scrollSpeed, itemMoveSpeed = 5f, interactionRange = 15f;
 
     Vector3 storedForce;
-    Rigidbody itemRigidbody;
-    Transform currentItem;
+    PhysicalObject currentItem;
     bool isMoving;
     Camera mainCam;
     float distance;
@@ -32,42 +31,61 @@ public class TKMove : SuperPower
         distance = Mathf.Clamp(distance, distanceLimits.x, distanceLimits.y);
 
         Vector3 movePosition = mainCam.transform.position + mainCam.transform.forward * distance;
-        float min = 0.38f;
-        float moveSpeed = itemMoveSpeed - ((massInfluence * min) * itemRigidbody.mass);
+        float moveSpeed = itemMoveSpeed;
 
-        storedForce = movePosition - currentItem.position;
-        itemRigidbody.velocity = storedForce * moveSpeed;
-        itemRigidbody.angularVelocity = new Vector3();
+        storedForce = movePosition - currentItem.transform.position;
+        currentItem.Move(storedForce * moveSpeed);
 
         if (Input.GetMouseButtonDown(1))
         {
             storedForce = new Vector3();
-            itemRigidbody.AddForce(mainCam.transform.forward * pushForce, ForceMode.Impulse);
+            currentItem.Rigidbody.AddForce(mainCam.transform.forward * pushForce, ForceMode.Impulse);
             EndMoving();
         }
     }
 
     void StartMoving()
     {
-        itemRigidbody = currentItem.GetComponentInChildren<Rigidbody>();
-        itemRigidbody.velocity = new Vector3();
-        itemRigidbody.angularVelocity = new Vector3();
-        itemRigidbody.useGravity = false;
-
-        distance = Vector3.Distance(mainCam.transform.position, itemRigidbody.position);
+        currentItem.StartMoving();
+        distance = Vector3.Distance(mainCam.transform.position, currentItem.transform.position);
         distance = Mathf.Clamp(distance, distanceLimits.x, distanceLimits.y);
         isMoving = true;
     }
 
     void EndMoving()
     {
-        itemRigidbody.useGravity = true;
-        itemRigidbody.AddForce(storedForce);
-        itemRigidbody = null;
+        currentItem.EndMoving(storedForce);
+        currentItem = null;
         down = false;
 
         isMoving = false;
         currentItem = null;
+    }
+
+    void GetObject(Transform trsf)
+    {
+        if (trsf)
+        {
+            PhysicalObject obj = trsf.GetComponentInChildren<PhysicalObject>();
+            if (obj)
+            {
+                if (currentItem && currentItem != obj)
+                {
+                    currentItem.Highlight(false);
+                    currentItem = null;
+                }
+
+                currentItem = obj;
+                currentItem.Highlight(true);
+                return;
+            }
+        }
+
+        if (currentItem)
+        {
+            currentItem.Highlight(false);
+            currentItem = null;
+        }
     }
 
     public override void UpdatePower()
@@ -76,17 +94,18 @@ public class TKMove : SuperPower
         if (Input.GetMouseButtonDown(0))
             down = true;
 
-        if (Input.GetMouseButton(0) && down)
+        if (currentItem)
         {
-            if (!isMoving && hit.transform != null)
+            if (Input.GetMouseButton(0) && down)
             {
-                currentItem = hit.transform;
-                StartMoving();
+                if (!isMoving)
+                    StartMoving();
+                else if (isMoving)
+                    Effect();
             }
-
-            if (currentItem && isMoving)
-                Effect();
         }
+        else
+          GetObject(hit.transform);
 
         if (Input.GetMouseButtonUp(0) && currentItem)
             EndMoving();
