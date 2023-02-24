@@ -94,6 +94,9 @@ public class TKMove : SuperPower
         if (Input.GetMouseButtonDown(0))
             down = true;
 
+        if (!isMoving)
+            GetObject(hit.transform);
+
         if (currentItem)
         {
             if (Input.GetMouseButton(0) && down)
@@ -104,8 +107,6 @@ public class TKMove : SuperPower
                     Effect();
             }
         }
-        else
-          GetObject(hit.transform);
 
         if (Input.GetMouseButtonUp(0) && currentItem)
             EndMoving();
